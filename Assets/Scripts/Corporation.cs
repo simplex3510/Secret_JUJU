@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Manager;
 
-public class Corporation : MonoBehaviour
+public class Corporation : MonoBehaviour/*, IObservable*/
 {
     [Header("Parent")]
     [SerializeField] private Transform parent;
@@ -22,7 +22,7 @@ public class Corporation : MonoBehaviour
         StartCoroutine(OperateEnterprise());
     }
 
-    
+
     public IEnumerator OperateEnterprise()
     {
         int loopCount = 0;
@@ -45,7 +45,7 @@ public class Corporation : MonoBehaviour
             isPreProfit = stockList[stockCount - 1].IsProfit;
             tempPrice = MarketManager.Instance.CreateValueByRandomWalk();
             isProfit = (0f < tempPrice - prePrice) ? true : false;
-            
+
             newStock.SetStockPrice(tempPrice);
             newStock.SetIsProfit(isProfit);
             newStock.SetColor();
