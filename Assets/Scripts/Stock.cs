@@ -3,14 +3,6 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StockData : ScriptableObject
-{
-    
-
-    
-}
-
-
 public class Stock : MonoBehaviour
 {
     [Header("Components")]
