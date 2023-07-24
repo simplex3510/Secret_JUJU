@@ -375,11 +375,13 @@
 -analyzer:"C:/Program Files/Unity Editor/2022.3.5f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.Properties.SourceGenerator.dll"
 -analyzer:"C:/Program Files/Unity Editor/2022.3.5f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
 "Assets/Scripts/CorporationData.cs"
+"Assets/Scripts/GraphWindow.cs"
 "Assets/Scripts/JsonData.cs"
 "Assets/Scripts/Manager/APIManager.cs"
 "Assets/Scripts/Manager/JsonManager.cs"
 "Assets/Scripts/Manager/MarketManager.cs"
 "Assets/Scripts/Manager/Singleton.cs"
+"Assets/Scripts/Stock.cs"
 -langversion:9.0
 
 /deterministic

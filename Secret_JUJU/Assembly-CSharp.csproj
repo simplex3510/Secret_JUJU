@@ -59,8 +59,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Manager\APIManager.cs" />
+    <Compile Include="Assets\Scripts\GraphWindow.cs" />
     <Compile Include="Assets\Scripts\JsonData.cs" />
     <Compile Include="Assets\Scripts\Manager\JsonManager.cs" />
+    <Compile Include="Assets\Scripts\Stock.cs" />
     <Compile Include="Assets\Scripts\Manager\MarketManager.cs" />
     <Compile Include="Assets\Scripts\Manager\Singleton.cs" />
     <Compile Include="Assets\Scripts\CorporationData.cs" />
