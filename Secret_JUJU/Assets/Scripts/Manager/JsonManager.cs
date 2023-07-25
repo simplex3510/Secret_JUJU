@@ -9,9 +9,10 @@ namespace Manager
     {
         public JsonData JsonData { get; private set; }
 
-        private void Awake()
+        public void ConvertJsonToData(string jsonString)
         {
-            JsonData = JsonConvert.DeserializeObject<JsonData>(APIManager.Instance.GetJsonString());
+            JsonData = JsonConvert.DeserializeObject<JsonData>(jsonString);
+            MarketManager.Instance.InitializeMarket();
         }
     }
 }

@@ -16,22 +16,20 @@ namespace Manager
         private static StringBuilder requestUrl = new StringBuilder();
         private static string jsonString = string.Empty;
 
-        public void OnClickButton()
+        public void OnClick()
         {
             StartCoroutine(LoadJsonData());
         }
 
         public string GetJsonString() => jsonString;
 
-        public IEnumerator LoadJsonData()
+        private IEnumerator LoadJsonData()
         {
-            InitRequestUrl();
-            AppendNumOfRows(2);
-            AppendPageNo(1);
-
+            InitRequestUrl("삼성전자", "20200000", "20210000");
             yield return StartCoroutine(ReceiveJsonData((www) =>
             {
                 jsonString = www.downloadHandler.text;
+                JsonManager.Instance.ConvertJsonToData(jsonString);
             }));
         }
 
@@ -53,39 +51,99 @@ namespace Manager
             }
         }
 
+        private void InitRequestUrl(string itemName, string startDate, string endDate)
+        {
+            InitRequestUrl();
+            AppendItemsName(itemName);
+            AppendBeginBaseDate(startDate);
+            AppendEndBaseDate(endDate);
+        }
+
         private void InitRequestUrl()
         {
             requestUrl.Clear();
             requestUrl.Append(baseUrl);
             AppendServiceKey(serviceEncodingKey);
             AppendResultType("json");
+            AppendNumOfRows(365);
+            AppendPageNo(1);
         }
-        private void AppendServiceKey(string serviceKey) => requestUrl.Append($"&serviceKey={serviceKey}");
-        private void AppendNumOfRows(int numOfRows) => requestUrl.Append($"&numOfRows={numOfRows}");
-        private void AppendPageNo(int pageNo) => requestUrl.Append($"&pageNo={pageNo}");
-        private void AppendResultType(string resultType) => requestUrl.Append($"&resultType={resultType}");
-        private void AppendBasDt(string basDt) => requestUrl.Append($"&basDt={basDt}");
-        private void AppendBeginBasDt(string beginBasDt) => requestUrl.Append($"&beginBasDt={beginBasDt}");
-        private void AppendEndBasDt(string endBasDt) => requestUrl.Append($"&endBasDt={endBasDt}");
-        private void AppendLikeBasDt(string likeBasDt) => requestUrl.Append($"&likeBasDt={likeBasDt}");
-        private void AppendLikeSrtnCd(string likeSrtnCd) => requestUrl.Append($"&likeSrtnCd={likeSrtnCd}");
-        private void AppendIsinCd(string isinCd) => requestUrl.Append($"&isinCd={isinCd}");
-        private void AppendLikeIsinCd(string likeIsinCd) => requestUrl.Append($"&likeIsinCd={likeIsinCd}");
-        private void AppendItmsNm(string itmsNm) => requestUrl.Append($"&itmsNm={itmsNm}");
-        private void AppendLikeItmsNm(string likeItmsNm) => requestUrl.Append($"&likeItmsNm={likeItmsNm}");
-        private void AppendMrktCls(string mrktCls) => requestUrl.Append($"&mrktCls={mrktCls}");
-        private void AppendBeginVs(string beginVs) => requestUrl.Append($"&beginVs={beginVs}");
-        private void AppendEndVs(string endVs) => requestUrl.Append($"&endVs={endVs}");
-        private void AppendBeginFltRt(string beginFltRt) => requestUrl.Append($"&beginFltRt={beginFltRt}");
-        private void AppendEndFltRt(string endFltRt) => requestUrl.Append($"&endFltRt={endFltRt}");
-        private void AppendBeginTrqu(string beginTrqu) => requestUrl.Append($"&beginTrqu={beginTrqu}");
-        private void AppendEndTrqu(string endTrqu) => requestUrl.Append($"&endTrqu={endTrqu}");
-        private void AppendBeginTrPrc(string beginTrPr) => requestUrl.Append($"&beginTrPr={beginTrPr}");
-        private void AppendEndTrPrc(string endTrPrc) => requestUrl.Append($"&endTrPrc={endTrPrc}");
-        private void AppendBeginLstgStCnt(string beginLstgStCnt) => requestUrl.Append($"beginLstgStCnt={beginLstgStCnt}");
-        private void AppendEndLstgStCnt(string endLstgStCnt) => requestUrl.Append($"&endLstgStCnt={endLstgStCnt}");
-        private void AppendBeginMrktTotAmt(string beginMrktTotAmt) => requestUrl.Append($"&beginMrktTotAmt={beginMrktTotAmt}");
-        private void AppendEndMrktTotAmt(string endMrktTotAmt) => requestUrl.Append($"&endMrktTotAmt={endMrktTotAmt}");
 
+        private void AppendServiceKey(string serviceKey) => requestUrl.Append($"&serviceKey={serviceKey}");
+        /// <summary> 한 페이지 결과 수 </summary>
+        /// <param name="serviceKey"></param>
+        private void AppendNumOfRows(int numOfRows) => requestUrl.Append($"&numOfRows={numOfRows}");
+        /// <summary> 페이지 번호 </summary>
+        /// <param name="pageNo"></param>
+        private void AppendPageNo(int pageNo) => requestUrl.Append($"&pageNo={pageNo}");
+        /// <summary> 구분(xml, json), Default: xml </summary>
+        /// <param name="resultType"></param>
+        private void AppendResultType(string resultType) => requestUrl.Append($"&resultType={resultType}");
+        /// <summary> 검색값과 기준일자가 일치하는 데이터를 검색 </summary>
+        /// <param name="basDt"></param>
+        private void AppendBaseDate(string basDt) => requestUrl.Append($"&basDt={basDt}");
+        /// <summary> 기준일자가 검색값보다 크거나 같은 데이터를 검색 </summary>
+        /// <param name="beginBasDt"></param>
+        private void AppendBeginBaseDate(string beginBasDt) => requestUrl.Append($"&beginBasDt={beginBasDt}");
+        /// <summary> 기준일자가 검색값보다 작은 데이터를 검색 </summary>
+        /// <param name="endBasDt"></param>
+        private void AppendEndBaseDate(string endBasDt) => requestUrl.Append($"&endBasDt={endBasDt}");
+        /// <summary> 기준일자값이 검색값을 포함하는 데이터를 검색 </summary>
+        /// <param name="likeBasDt"></param>
+        private void AppendLikeBaseDate(string likeBasDt) => requestUrl.Append($"&likeBasDt={likeBasDt}");
+        /// <summary> 단축코드가 검색값을 포함하는 데이터를 검색 </summary>
+        /// <param name="likeSrtnCd"></param>
+        private void AppendLikeShrotenCode(string likeSrtnCd) => requestUrl.Append($"&likeSrtnCd={likeSrtnCd}");
+        /// <summary> 검색값과 ISIN코드이 일치하는 데이터를 검색 </summary>
+        /// <param name="isinCd"></param>
+        private void AppendIsinCode(string isinCd) => requestUrl.Append($"&isinCd={isinCd}");
+        /// <summary> ISIN코드가 검색값을 포함하는 데이터를 검색 </summary>
+        /// <param name="likeIsinCd"></param>
+        private void AppendLikeIsinCode(string likeIsinCd) => requestUrl.Append($"&likeIsinCd={Uri.EscapeDataString(likeIsinCd)}");
+        /// <summary> 검색값과 종목명이 일치하는 데이터를 검색 </summary>
+        /// <param name="itmsNm"></param>
+        private void AppendItemsName(string itmsNm) => requestUrl.Append($"&itmsNm={Uri.EscapeDataString(itmsNm)}");
+        /// <summary> 종목명이 검색값을 포함하는 데이터를 검색 </summary>
+        /// <param name="likeItmsNm"></param>
+        private void AppendLikeItemsName(string likeItmsNm) => requestUrl.Append($"&likeItmsNm={likeItmsNm}");
+        /// <summary> 검색값과 시장구분이 일치하는 데이터를 검색 </summary>
+        /// <param name="mrktCls"></param>
+        private void AppendMarketClassification(string mrktCls) => requestUrl.Append($"&mrktCls={mrktCls}");
+        /// <summary> 대비가 검색값보다 크거나 같은 데이터를 검색 </summary>
+        /// <param name="beginVs"></param>
+        private void AppendBeginVersus(string beginVs) => requestUrl.Append($"&beginVs={beginVs}");
+        /// <summary> 대비가 검색값보다 작은 데이터를 검색 </summary>
+        /// <param name="endVs"></param>
+        private void AppendEndVersus(string endVs) => requestUrl.Append($"&endVs={endVs}");
+        /// <summary> 등락률이 검색값보다 크거나 같은 데이터를 검색 </summary>
+        /// <param name="beginFltRt"></param>
+        private void AppendBeginFloatingRate(string beginFltRt) => requestUrl.Append($"&beginFltRt={beginFltRt}");
+        /// <summary> 등락률이 검색값보다 작은 데이터를 검색 </summary>
+        /// <param name="endFltRt"></param>
+        private void AppendEndFloatingRate(string endFltRt) => requestUrl.Append($"&endFltRt={endFltRt}");
+        /// <summary> 거래량이 검색값보다 크거나 같은 데이터를 검색 </summary>
+        /// <param name="beginTrqu"></param>
+        private void AppendBeginTradeQuantity(string beginTrqu) => requestUrl.Append($"&beginTrqu={beginTrqu}");
+        /// <summary> 거래량이 검색값보다 작은 데이터를 검색 </summary>
+        /// <param name="endTrqu"></param>
+        private void AppendEndTradeQuantity(string endTrqu) => requestUrl.Append($"&endTrqu={endTrqu}");
+        /// <summary> 거래대금이 검색값보다 크거나 같은 데이터를 검색 </summary>
+        /// <param name="beginTrPr"></param>
+        private void AppendBeginTradePrice(string beginTrPr) => requestUrl.Append($"&beginTrPr={beginTrPr}");
+        /// <summary> 거래대금이 검색값보다 작은 데이터를 검색 </summary>
+        /// <param name="endTrPrc"></param>
+        private void AppendEndTradePrice(string endTrPrc) => requestUrl.Append($"&endTrPrc={endTrPrc}");
+        /// <summary> 상장주식수가 검색값보다 크거나 같은 데이터를 검색 </summary>
+        /// <param name="beginLstgStCnt"></param>
+        private void AppendBeginListingStockCount(string beginLstgStCnt) => requestUrl.Append($"beginLstgStCnt={beginLstgStCnt}");
+        /// <summary> 상장주식수가 검색값보다 작은 데이터를 검색 </summary>
+        /// <param name="endLstgStCnt"></param>
+        private void AppendEndListingStockCount(string endLstgStCnt) => requestUrl.Append($"&endLstgStCnt={endLstgStCnt}");
+        /// <summary> 시가총액이 검색값보다 크거나 같은 데이터를 검색 </summary>
+        /// <param name="beginMrktTotAmt"></param>
+        private void AppendBeginMarketTotalAmounts(string beginMrktTotAmt) => requestUrl.Append($"&beginMrktTotAmt={beginMrktTotAmt}");
+        /// <summary> 시가총액이 검색값보다 작은 데이터를 검색 </summary>
+        /// <param name="endMrktTotAmt"></param>
+        private void AppendEndMarketTotalAmounts(string endMrktTotAmt) => requestUrl.Append($"&endMrktTotAmt={endMrktTotAmt}");
     }
 }
