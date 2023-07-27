@@ -111,7 +111,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 50, y: 520}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &7580064530119840601
 MonoBehaviour:
@@ -128,10 +128,6 @@ MonoBehaviour:
   rectTransform: {fileID: 3029533110895733666}
   candleRect: {fileID: 5664861796781612539}
   stickRect: {fileID: 8877062349728924033}
-  marketPrice: 30
-  closingPrice: 10
-  highPrice: 50
-  lowPrice: 5
 --- !u!1 &4950487546401326368
 GameObject:
   m_ObjectHideFlags: 0

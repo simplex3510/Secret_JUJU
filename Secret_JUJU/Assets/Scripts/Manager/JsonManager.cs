@@ -9,10 +9,21 @@ namespace Manager
     {
         public JsonData JsonData { get; private set; }
 
+        private bool isInitialized = false;
+
         public void ConvertJsonToData(string jsonString)
         {
             JsonData = JsonConvert.DeserializeObject<JsonData>(jsonString);
-            MarketManager.Instance.InitializeMarket();
+            if (isInitialized == false)
+            {
+                MarketManager.Instance.InitializeMarket();
+                MarketManager.Instance.market.AddCorporation();
+                isInitialized = true;
+            }
+            else
+            {
+                MarketManager.Instance.market.AddCorporation();
+            }
         }
     }
 }

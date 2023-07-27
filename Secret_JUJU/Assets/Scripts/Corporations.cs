@@ -10,11 +10,9 @@ public class Corporations
     public Corporations(int maxCount) 
     {
         corporations = new List<Corporation>(maxCount);
-
-        InitializeCorporations();
     }
 
-    private void InitializeCorporations()
+    public void AddCorporation()
     {
         corporations.Add(new Corporation());
     }
