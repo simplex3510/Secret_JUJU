@@ -8,16 +8,16 @@ public class StockData
 
     public float Versus { get { return versus; } private set { versus = value; } }
     private float versus;          // 대비
-    public float MarketPrice { get { return marketPrice; } private set { marketPrice = value; } }
-    private float marketPrice;     // 시가
-    public float ClosingPrice { get { return closingPrice; } private set { closingPrice = value; } }
-    private float closingPrice;    // 종가
-    public float HighPrice { get { return highPrice; } private set { highPrice = value; } }
-    private float highPrice;       // 고가
-    public float LowPrice { get { return lowPrice; } private set { lowPrice = value; } }             
-    private float lowPrice;        // 저가
+    public int MarketPrice { get { return marketPrice; } private set { marketPrice = value; } }
+    private int marketPrice;     // 시가
+    public int ClosingPrice { get { return closingPrice; } private set { closingPrice = value; } }
+    private int closingPrice;    // 종가
+    public int HighPrice { get { return highPrice; } private set { highPrice = value; } }
+    private int highPrice;       // 고가
+    public int LowPrice { get { return lowPrice; } private set { lowPrice = value; } }             
+    private int lowPrice;        // 저가
 
-    public StockData(float versus, float marketPrice, float closingPrice, float highPrice, float lowPrice)
+    public StockData(float versus, int marketPrice, int closingPrice, int highPrice, int lowPrice)
     {
         this.versus = versus;
         this.marketPrice = marketPrice;

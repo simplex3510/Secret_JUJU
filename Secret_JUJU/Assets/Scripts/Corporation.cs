@@ -17,10 +17,10 @@ public class Corporation
         foreach (var item in JsonManager.Instance.JsonData.response.body.items.item)
         {
             float versus = float.Parse(item.vs);
-            float marketPrice = float.Parse(item.mkp);
-            float closingPrice = float.Parse(item.clpr);
-            float highPrice = float.Parse(item.hipr);
-            float lowPrice = float.Parse(item.lopr);
+            int marketPrice = int.Parse(item.mkp);
+            int closingPrice = int.Parse(item.clpr);
+            int highPrice = int.Parse(item.hipr);
+            int lowPrice = int.Parse(item.lopr);
             stockData.Add(new StockData(versus, marketPrice, closingPrice, highPrice, lowPrice));
         }
     }

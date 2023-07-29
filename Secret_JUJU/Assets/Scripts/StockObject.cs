@@ -10,18 +10,24 @@ public class StockObject : MonoBehaviour
     [SerializeField] private RectTransform candleRect;
     [SerializeField] private RectTransform stickRect;
 
-    StockData stockData;
+    private StockData stockData;
+    private readonly int STOCK_SIZE_X = 50;
+    private readonly int CANDLE_SIZE_X = 50;
+    private readonly int STICK_SIZE_X = 25;
 
     public void InitializeStock(StockData stockData, Vector2 stockPosition)
     {
+        this.stockData = stockData;
+
         rectTransform = GetComponent<RectTransform>();
         candleRect = rectTransform.GetChild(0).GetComponent<RectTransform>();
         stickRect = rectTransform.GetChild(1).GetComponentInChildren<RectTransform>();
 
-        this.stockData = stockData;
+        rectTransform.sizeDelta = new Vector2(STOCK_SIZE_X, (((stockData.HighPrice - stockData.LowPrice) / UIManager.Instance.MaxY) * UIManager.Instance.GraphHeight));
+        rectTransform.anchoredPosition = new Vector2(stockPosition.x, 0);
 
         InitializeCandle(stockPosition);
-        //InitializeStick(stockPosition);
+        InitializeStick(stockPosition);
     }
 
     private void InitializeCandle(Vector2 anchoredPosition)
@@ -29,25 +35,29 @@ public class StockObject : MonoBehaviour
         if (0 < stockData.Versus)
         {
             candleRect.GetComponent<Image>().color = Color.red;
-
-            candleRect.anchorMin = new Vector2(0, 0);
-            candleRect.anchorMax = new Vector2(0, 0);
-            candleRect.pivot = new Vector2(0, 0);
-
-            candleRect.sizeDelta = new Vector2(50, (((stockData.ClosingPrice - stockData.MarketPrice) / UIManager.Instance.MaxY) * 520));
-            candleRect.anchoredPosition = new Vector2(anchoredPosition.x, ((stockData.MarketPrice / UIManager.Instance.MaxY) * 520));
         }
         else
         {
             candleRect.GetComponent<Image>().color = Color.blue;
-
-            candleRect.anchorMin = new Vector2(0, 0);
-            candleRect.anchorMax = new Vector2(0, 0);
-            candleRect.pivot = new Vector2(0, 0);
-
-            candleRect.sizeDelta = new Vector2(50, (((stockData.MarketPrice - stockData.ClosingPrice) / UIManager.Instance.MaxY) * 520));
-            candleRect.anchoredPosition = new Vector2(anchoredPosition.x, ((stockData.ClosingPrice / UIManager.Instance.MaxY) * 520));
         }
+
+        //candleRect.anchorMin = new Vector2(0, 0);
+        //candleRect.anchorMax = new Vector2(0, 0);
+        //candleRect.pivot = new Vector2(0, 0);
+
+        if (stockData.ClosingPrice < stockData.MarketPrice)
+        {
+            float candleY = (((stockData.MarketPrice - stockData.ClosingPrice) / UIManager.Instance.MaxY) * UIManager.Instance.GraphHeight);
+            candleRect.sizeDelta = new Vector2(CANDLE_SIZE_X, candleY);
+            candleRect.anchoredPosition = new Vector2(anchoredPosition.x, candleY);
+        }
+        else
+        {
+            float candleSizeY = (((stockData.ClosingPrice - stockData.MarketPrice) / UIManager.Instance.MaxY) * UIManager.Instance.GraphHeight);
+            candleRect.sizeDelta = new Vector2(CANDLE_SIZE_X, candleSizeY);
+            candleRect.anchoredPosition = new Vector2(anchoredPosition.x, candleSizeY);
+        }
+
     }
 
     private void InitializeStick(Vector2 anchoredPosition)
@@ -61,11 +71,10 @@ public class StockObject : MonoBehaviour
             stickRect.GetComponent<Image>().color = Color.blue;
         }
 
-        stickRect.anchorMin = new Vector2(0.5f, 0f);
-        stickRect.anchorMax = new Vector2(0.5f, 0f);
-        stickRect.pivot = new Vector2(0.5f, 0f);
+        //stickRect.anchorMin = new Vector2(0.5f, 0f);
+        //stickRect.anchorMax = new Vector2(0.5f, 0f);
+        //stickRect.pivot = new Vector2(0.5f, 0f);
 
-        stickRect.sizeDelta = new Vector2(10, (((stockData.ClosingPrice - stockData.MarketPrice) / 1000000) * 520));
-        stickRect.anchoredPosition = new Vector2(anchoredPosition.x/2, ((stockData.LowPrice / UIManager.Instance.MaxY) * 520));
+        stickRect.sizeDelta = new Vector2(STICK_SIZE_X, (((stockData.HighPrice - stockData.LowPrice) / UIManager.Instance.MaxY) * UIManager.Instance.GraphHeight));
     }
 }

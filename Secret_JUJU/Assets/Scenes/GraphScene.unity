@@ -890,6 +890,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   graphContainer: {fileID: 2045468108}
+  stockPrefab: {fileID: 1973742532075341163, guid: 229adda1ed288114bb419a8dc9d4dac1, type: 3}
 --- !u!4 &1146325913
 Transform:
   m_ObjectHideFlags: 0
