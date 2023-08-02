@@ -11,6 +11,7 @@ public class StockObject : MonoBehaviour
     [SerializeField] private RectTransform stickRect;
 
     private StockData stockData;
+    private Vector2 stockSize;
     private readonly int STOCK_SIZE_X = 50;
     private readonly int CANDLE_SIZE_X = 50;
     private readonly int STICK_SIZE_X = 25;
@@ -23,8 +24,9 @@ public class StockObject : MonoBehaviour
         candleRect = rectTransform.GetChild(0).GetComponent<RectTransform>();
         stickRect = rectTransform.GetChild(1).GetComponentInChildren<RectTransform>();
 
-        rectTransform.sizeDelta = new Vector2(STOCK_SIZE_X, (((stockData.HighPrice - stockData.LowPrice) / UIManager.Instance.MaxY) * UIManager.Instance.GraphHeight));
-        rectTransform.anchoredPosition = new Vector2(stockPosition.x, 0);
+        stockSize = new Vector2(STOCK_SIZE_X, (((stockData.HighPrice - stockData.LowPrice) / UIManager.Instance.MaxY) * UIManager.Instance.GraphHeight));
+        rectTransform.sizeDelta = stockSize;
+        rectTransform.anchoredPosition = new Vector2(stockPosition.x, UIManager.Instance.GraphHeight - stockSize.y);
 
         InitializeCandle(stockPosition);
         InitializeStick(stockPosition);
@@ -75,6 +77,7 @@ public class StockObject : MonoBehaviour
         //stickRect.anchorMax = new Vector2(0.5f, 0f);
         //stickRect.pivot = new Vector2(0.5f, 0f);
 
-        stickRect.sizeDelta = new Vector2(STICK_SIZE_X, (((stockData.HighPrice - stockData.LowPrice) / UIManager.Instance.MaxY) * UIManager.Instance.GraphHeight));
+        float stickSizeY = (((stockData.HighPrice - stockData.LowPrice) / UIManager.Instance.MaxY) * UIManager.Instance.GraphHeight);
+        stickRect.sizeDelta = new Vector2(STICK_SIZE_X, stickSizeY);
     }
 }
