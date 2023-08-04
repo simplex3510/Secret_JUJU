@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -8,41 +9,58 @@ namespace Manager
     // Stock Graph UI
     public partial class UIManager : Singleton<UIManager>
     {
-        public float MaxY { get; private set; } = 0;
-        public float GraphHeight { get; private set; }
+        public int AxisMaxY { get; private set; } = int.MinValue;
+        public int AxisMinY { get; private set; } = int.MaxValue;
+        public int MinY { get; private set; } = int.MaxValue;
+        public int MaxY { get; private set; } = int.MinValue;
+        public int MaxX { get; private set; } = 0;
 
-        [SerializeField] private RectTransform graphContainer;
+        [SerializeField] private RectTransform chartContainer;
         [SerializeField] private GameObject stockPrefab;
+        private readonly int OFFSET_X = 50;
+        private int stockIndex = 0;
 
-        private void Awake()
+        public void CreateStockObject(Corporation corporation, int count, Vector2 stockMaxVector)
         {
-            GraphHeight = graphContainer.sizeDelta.y;
-        }
-
-        public void CreateStockObject(Corporation corporation, int count, Vector2 stockPosition)
-        {
-            StockObject stockObject = Instantiate(stockPrefab, graphContainer.transform, false).GetComponent<StockObject>();
+            StockObject stockObject = Instantiate(stockPrefab, chartContainer.transform, false).GetComponent<StockObject>();
             StockData stockData = corporation.stockData[count];
 
-            if (MaxY < stockData.HighPrice - stockData.LowPrice)
-            {
-                UpdateMaxY(stockData.HighPrice - stockData.LowPrice);
-            }
-
-            stockObject.InitializeStock(stockData, stockPosition);
+            stockObject.InitializeStock(stockData, stockMaxVector);
         }
 
-        public void ShowStockChart(Corporation corporation)
+        public void UpdateStockChart(Corporation corporation)
         {
-            float xSize = 50f;
-            for (int offset = 0, index = MarketManager.Instance.StockCount-1; 0 <= index; offset++, index--)
+            int stockVectorY = corporation.stockData[stockIndex].HighPrice - corporation.stockData[stockIndex].LowPrice;
+            if (MaxY < stockVectorY)
             {
-                float xPosition = offset * xSize;
-                float yPosition = corporation.stockData[index].MarketPrice;
-                Vector2 stockPosition = new Vector2(xPosition, yPosition);
-                CreateStockObject(corporation, index, stockPosition);
-                break;
+                UpdateMaxY(stockVectorY);
             }
+            if (stockVectorY < MinY)
+            {
+                MinY = stockVectorY;
+            }
+
+            UpdateAxisMaxY(stockVectorY);
+            UpdateAxisMinY(stockVectorY);
+
+            int curStockIndex = 0;
+            while (/*curStockIndex <= stockIndex &&*/ stockIndex < MarketManager.Instance.StockCount)
+            {
+                MaxX = OFFSET_X * curStockIndex;
+                float xVector = MaxX;
+                float yVector = MaxY;
+
+                Vector2 stockMaxVector = new Vector2(xVector, yVector);
+                CreateStockObject(corporation, curStockIndex, stockMaxVector);
+                curStockIndex++;
+                if (stockIndex == 1)
+                {
+                    break;
+                }
+                stockIndex++;
+            }
+
+            chartContainer.sizeDelta = new Vector2(MaxX, MaxY);
         }
 
         private void UpdateMaxY(int valueY)
@@ -60,16 +78,75 @@ namespace Manager
                     if (remainder == 0)
                     {
                         MaxY = divisor * quotient;
-                        return;
                     }
                     else
                     {
                         MaxY = divisor * (quotient + 1);
-                        return;
                     }
+                    return;
                 }
 
                 divisor *= 10;
+            }
+        }
+
+        private void UpdateAxisMaxY(int valueY) // 1501
+        {
+            int divisor = 1;
+            int quotient = 0;
+            int remainder = 0;
+
+            while (true)
+            {
+                quotient = valueY / divisor;
+
+                if(quotient == 1)
+                {
+                    remainder = valueY % divisor;
+                    if (true)
+                    {
+                        AxisMaxY = divisor;
+                    }
+                    else
+                    {
+                        AxisMaxY = 5 * (divisor / 10);
+                    }
+                    return;
+                }
+                else
+                {
+                    divisor *= 10;
+                }
+            }
+        }
+
+        private void UpdateAxisMinY(int valueY) // 1501
+        {
+            int divisor = 1;
+            int quotient = 0;
+            int remainder = 0;
+
+            while (true)
+            {
+                quotient = valueY / divisor;
+
+                if (quotient == 1)
+                {
+                    remainder = valueY % divisor;
+                    if (remainder == 0 || remainder < (divisor/2))
+                    {
+                        AxisMinY = divisor;
+                    }
+                    else
+                    {
+                        AxisMinY = 5 * (divisor / 10);
+                    }
+                    return;
+                }
+                else
+                {
+                    divisor *= 10;
+                }
             }
         }
     }

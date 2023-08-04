@@ -22,7 +22,7 @@ namespace Manager
         {
             foreach (var corporation in market.corporations)
             {
-                UIManager.Instance.ShowStockChart(corporation);
+                UIManager.Instance.UpdateStockChart(corporation);
             }
         }
     }

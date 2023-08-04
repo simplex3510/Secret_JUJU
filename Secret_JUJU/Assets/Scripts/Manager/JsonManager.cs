@@ -14,6 +14,7 @@ namespace Manager
         public void ConvertJsonToData(string jsonString)
         {
             JsonData = JsonConvert.DeserializeObject<JsonData>(jsonString);
+            JsonData.response.body.items.item.Reverse();
             if (isInitialized == false)
             {
                 MarketManager.Instance.InitializeMarket();

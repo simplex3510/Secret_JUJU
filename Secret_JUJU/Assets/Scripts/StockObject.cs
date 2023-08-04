@@ -1,4 +1,5 @@
 using Manager;
+using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,7 +17,7 @@ public class StockObject : MonoBehaviour
     private readonly int CANDLE_SIZE_X = 50;
     private readonly int STICK_SIZE_X = 25;
 
-    public void InitializeStock(StockData stockData, Vector2 stockPosition)
+    public void InitializeStock(StockData stockData, Vector2 stockMaxVector)
     {
         this.stockData = stockData;
 
@@ -24,15 +25,16 @@ public class StockObject : MonoBehaviour
         candleRect = rectTransform.GetChild(0).GetComponent<RectTransform>();
         stickRect = rectTransform.GetChild(1).GetComponentInChildren<RectTransform>();
 
-        stockSize = new Vector2(STOCK_SIZE_X, (((stockData.HighPrice - stockData.LowPrice) / UIManager.Instance.MaxY) * UIManager.Instance.GraphHeight));
+        float stockSizeY = stockData.HighPrice - stockData.LowPrice;
+        stockSize = new Vector2(STOCK_SIZE_X, stockSizeY);
         rectTransform.sizeDelta = stockSize;
-        rectTransform.anchoredPosition = new Vector2(stockPosition.x, UIManager.Instance.GraphHeight - stockSize.y);
+        rectTransform.anchoredPosition = new Vector2(stockMaxVector.x, (stockData.HighPrice - stockData.LowPrice) - UIManager.Instance.MinY);
 
-        InitializeCandle(stockPosition);
-        InitializeStick(stockPosition);
+        //InitializeCandle();
+        InitializeStick();
     }
 
-    private void InitializeCandle(Vector2 anchoredPosition)
+    private void InitializeCandle()
     {
         if (0 < stockData.Versus)
         {
@@ -49,20 +51,20 @@ public class StockObject : MonoBehaviour
 
         if (stockData.ClosingPrice < stockData.MarketPrice)
         {
-            float candleY = (((stockData.MarketPrice - stockData.ClosingPrice) / UIManager.Instance.MaxY) * UIManager.Instance.GraphHeight);
+            float candleY = stockData.MarketPrice - stockData.ClosingPrice;
             candleRect.sizeDelta = new Vector2(CANDLE_SIZE_X, candleY);
-            candleRect.anchoredPosition = new Vector2(anchoredPosition.x, candleY);
+            candleRect.anchoredPosition = new Vector2(0, candleY);
         }
         else
         {
-            float candleSizeY = (((stockData.ClosingPrice - stockData.MarketPrice) / UIManager.Instance.MaxY) * UIManager.Instance.GraphHeight);
-            candleRect.sizeDelta = new Vector2(CANDLE_SIZE_X, candleSizeY);
-            candleRect.anchoredPosition = new Vector2(anchoredPosition.x, candleSizeY);
+            float candleY = stockData.ClosingPrice - stockData.MarketPrice;
+            candleRect.sizeDelta = new Vector2(CANDLE_SIZE_X, candleY);
+            candleRect.anchoredPosition = new Vector2(0, candleY);
         }
 
     }
 
-    private void InitializeStick(Vector2 anchoredPosition)
+    private void InitializeStick()
     {
         if (0 < stockData.Versus)
         {
@@ -77,7 +79,12 @@ public class StockObject : MonoBehaviour
         //stickRect.anchorMax = new Vector2(0.5f, 0f);
         //stickRect.pivot = new Vector2(0.5f, 0f);
 
-        float stickSizeY = (((stockData.HighPrice - stockData.LowPrice) / UIManager.Instance.MaxY) * UIManager.Instance.GraphHeight);
+        float stickSizeY = (stockData.HighPrice - stockData.LowPrice) / (float)UIManager.Instance.MaxY;
         stickRect.sizeDelta = new Vector2(STICK_SIZE_X, stickSizeY);
     }
+
+    //private float MappingAxisY(int valueY)
+    //{
+    //    return 
+    //}
 }
