@@ -60,12 +60,13 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\StockData.cs" />
     <Compile Include="Assets\Scripts\Manager\APIManager.cs" />
-    <Compile Include="Assets\Scripts\GraphWindow.cs" />
     <Compile Include="Assets\Scripts\Manager\UIManager.cs" />
     <Compile Include="Assets\Scripts\JsonData.cs" />
     <Compile Include="Assets\Scripts\StockObject.cs" />
     <Compile Include="Assets\Scripts\Corporations.cs" />
+    <Compile Include="Assets\Scripts\SlideWindow.cs" />
     <Compile Include="Assets\Scripts\Manager\JsonManager.cs" />
+    <Compile Include="Assets\Scripts\Manager\GameManager.cs" />
     <Compile Include="Assets\Scripts\Corporation.cs" />
     <Compile Include="Assets\Scripts\Manager\MarketManager.cs" />
     <Compile Include="Assets\Scripts\Manager\Singleton.cs" />

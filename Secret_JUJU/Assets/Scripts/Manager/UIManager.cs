@@ -1,153 +1,213 @@
-using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 namespace Manager
 {
-    // Stock Graph UI
     public partial class UIManager : Singleton<UIManager>
     {
-        public int AxisMaxY { get; private set; } = int.MinValue;
-        public int AxisMinY { get; private set; } = int.MaxValue;
-        public int MinY { get; private set; } = int.MaxValue;
-        public int MaxY { get; private set; } = int.MinValue;
-        public int MaxX { get; private set; } = 0;
+        public delegate void MoveTurnDelegate();
+        public MoveTurnDelegate MoveTurn;
+
+        public void OnClickMoveTurn() => MoveTurn();
+
+        public void InitializeUI()
+        {
+            InitializeStockChart();
+            InitializeInterface();
+
+            MoveTurn += GameManager.Instance.MoveTurn;
+            MoveTurn += UpdateInterface;
+            MoveTurn += UpdateStockChart;
+            MoveTurn += InitializeCoinSlide;
+            MoveTurn += InitializeStockSlide;
+        }
+
+        // Stock Graph UI
+        #region Stock Chart
+        public float AxisMaxY { get; private set; } = int.MinValue;
+        public float AxisMinY { get; private set; } = int.MaxValue;
+        public float AxisMaxX { get; private set; } = 0;
+        public readonly float CORRECTION_VALUE = 0.1f;
 
         [SerializeField] private RectTransform chartContainer;
         [SerializeField] private GameObject stockPrefab;
-        private readonly int OFFSET_X = 50;
-        private int stockIndex = 0;
 
-        public void CreateStockObject(Corporation corporation, int count, Vector2 stockMaxVector)
+        private readonly int CHART_HEIGHT = 950;
+        private readonly int CHART_WIDTH = 530;
+        private readonly int OFFSET_X = 50;
+
+        private List<StockObject> stockObjects;
+
+        public void InitializeStockChart()
+        {
+            stockObjects = new List<StockObject>();
+
+            for (int i = 0; i < chartContainer.childCount; i++)
+            {
+                Destroy(chartContainer.GetChild(i).gameObject);
+            }
+        }
+
+        public void UpdateStockChart()
+        {
+            int turnIndex = GameManager.Instance.TurnIndex;
+
+            UpdateAxisMaxY(MarketManager.Instance.market.corporations[(int)CorporationID.A].corporation[turnIndex].HighPrice);
+            UpdateAxisMinY(MarketManager.Instance.market.corporations[(int)CorporationID.A].corporation[turnIndex].LowPrice);
+
+            float xVector = OFFSET_X * turnIndex;
+            float yVector = AxisMaxY;
+            Vector2 stockMaxVector = new Vector2(xVector, yVector);
+
+            AxisMaxX = OFFSET_X * (turnIndex + 1);
+            chartContainer.sizeDelta = new Vector2(AxisMaxX, (AxisMaxY - AxisMinY) * CORRECTION_VALUE);
+
+            SetPositionStockObjects(turnIndex);
+
+            StockObject newStockObject = CreateNewStockObject(turnIndex, stockMaxVector);
+            stockObjects.Add(newStockObject);
+        }
+
+        public StockObject CreateNewStockObject(int count, Vector2 stockMaxVector)
         {
             StockObject stockObject = Instantiate(stockPrefab, chartContainer.transform, false).GetComponent<StockObject>();
-            StockData stockData = corporation.stockData[count];
+            StockData stockData = MarketManager.Instance.market.corporations[(int)CorporationID.A].corporation[count];
 
             stockObject.InitializeStock(stockData, stockMaxVector);
+
+            return stockObject;
         }
 
-        public void UpdateStockChart(Corporation corporation)
+        private void SetPositionStockObjects(int turnIndex)
         {
-            int stockVectorY = corporation.stockData[stockIndex].HighPrice - corporation.stockData[stockIndex].LowPrice;
-            if (MaxY < stockVectorY)
+            for (int stockIndex = 0; stockIndex < turnIndex && turnIndex < GameManager.Instance.TurnMax; stockIndex++)
             {
-                UpdateMaxY(stockVectorY);
+                stockObjects[stockIndex].rectTransform.anchoredPosition = new Vector2(stockIndex * OFFSET_X, (stockObjects[stockIndex].stockData.LowPrice - AxisMinY) *CORRECTION_VALUE);
             }
-            if (stockVectorY < MinY)
-            {
-                MinY = stockVectorY;
-            }
-
-            UpdateAxisMaxY(stockVectorY);
-            UpdateAxisMinY(stockVectorY);
-
-            int curStockIndex = 0;
-            while (/*curStockIndex <= stockIndex &&*/ stockIndex < MarketManager.Instance.StockCount)
-            {
-                MaxX = OFFSET_X * curStockIndex;
-                float xVector = MaxX;
-                float yVector = MaxY;
-
-                Vector2 stockMaxVector = new Vector2(xVector, yVector);
-                CreateStockObject(corporation, curStockIndex, stockMaxVector);
-                curStockIndex++;
-                if (stockIndex == 1)
-                {
-                    break;
-                }
-                stockIndex++;
-            }
-
-            chartContainer.sizeDelta = new Vector2(MaxX, MaxY);
         }
 
-        private void UpdateMaxY(int valueY)
+        private void UpdateAxisMaxY(int highPrice)
         {
-            int divisor = 1;
-            int quotient = 0;
-            int remainder = 0;
 
-            while (true)
+            if (AxisMaxY < highPrice)
             {
-                quotient = valueY / divisor;
-                if (quotient < 10)
-                {
-                    remainder = valueY % divisor;
-                    if (remainder == 0)
-                    {
-                        MaxY = divisor * quotient;
-                    }
-                    else
-                    {
-                        MaxY = divisor * (quotient + 1);
-                    }
-                    return;
-                }
-
-                divisor *= 10;
+                AxisMaxY = highPrice;
             }
         }
 
-        private void UpdateAxisMaxY(int valueY) // 1501
+        private void UpdateAxisMinY(int lowPrice)
         {
-            int divisor = 1;
-            int quotient = 0;
-            int remainder = 0;
-
-            while (true)
+            if (lowPrice < AxisMinY)
             {
-                quotient = valueY / divisor;
-
-                if(quotient == 1)
-                {
-                    remainder = valueY % divisor;
-                    if (true)
-                    {
-                        AxisMaxY = divisor;
-                    }
-                    else
-                    {
-                        AxisMaxY = 5 * (divisor / 10);
-                    }
-                    return;
-                }
-                else
-                {
-                    divisor *= 10;
-                }
+                AxisMinY = lowPrice;
             }
         }
 
-        private void UpdateAxisMinY(int valueY) // 1501
+        //private void UpdateUnitY(int marketPrice)
+        //{
+        //    if (500_000 < marketPrice)
+        //    {
+        //        unitY = 1000;
+        //    }
+        //    else if (200_000 < marketPrice)
+        //    {
+        //        unitY = 500;
+        //    }
+        //    else if (50_000 < marketPrice)
+        //    {
+        //        unitY = 100;
+        //    }
+        //    else if (20_000 < marketPrice)
+        //    {
+        //        unitY = 50;
+        //    }
+        //    else if (5_000 < marketPrice)
+        //    {
+        //        unitY = 10;
+        //    }
+        //    else if (2_000 < marketPrice)
+        //    {
+        //        unitY = 5;
+        //    }
+        //    else
+        //    {
+        //        unitY = 1;
+        //    }
+        //}
+        #endregion
+
+        #region Interface
+        [SerializeField] private TextMeshProUGUI coinAmountText;
+        [SerializeField] private TextMeshProUGUI stockAmountText;
+        [SerializeField] private TextMeshProUGUI profitRateText;
+        [SerializeField] private TextMeshProUGUI turnText;
+
+        public void InitializeInterface()
         {
-            int divisor = 1;
-            int quotient = 0;
-            int remainder = 0;
-
-            while (true)
-            {
-                quotient = valueY / divisor;
-
-                if (quotient == 1)
-                {
-                    remainder = valueY % divisor;
-                    if (remainder == 0 || remainder < (divisor/2))
-                    {
-                        AxisMinY = divisor;
-                    }
-                    else
-                    {
-                        AxisMinY = 5 * (divisor / 10);
-                    }
-                    return;
-                }
-                else
-                {
-                    divisor *= 10;
-                }
-            }
+            coinAmountText.text = $"{GameManager.Instance.CoinAmount}";
+            stockAmountText.text = $"{GameManager.Instance.StockAmount}";
+            profitRateText.text = $"({GameManager.Instance.cumulativeProfitRate}%)";
+            turnText.text = $"({GameManager.Instance.TurnIndex + 1}/{GameManager.Instance.TurnMax})";
         }
+
+        public void UpdateInterface()
+        {
+            turnText.text = $"({GameManager.Instance.TurnIndex + 1}/{GameManager.Instance.TurnMax})";
+        }
+        #endregion
+
+        #region Slide Interface
+        [SerializeField] private TextMeshProUGUI coinSlide_CoinText;
+        [SerializeField] private TextMeshProUGUI coinSlide_StockText;
+        private int coinSlide_Coin;
+        private int coinSlide_Stock;
+        
+        [SerializeField] private TextMeshProUGUI stockSlide_CoinText;
+        [SerializeField] private TextMeshProUGUI stockSlide_StockText;
+        private int stockSlide_Coin;
+        private int stockSlide_Stock;
+
+        private void InitializeCoinSlide()
+        {
+            coinSlide_Coin = GameManager.Instance.currentStockData().MarketPrice;
+            coinSlide_Stock = 0;
+
+            coinSlide_CoinText.text = $"{coinSlide_Coin}";
+            coinSlide_StockText.text = $"{coinSlide_Stock}";
+
+        }
+
+        private void InitializeStockSlide()
+        {
+            stockSlide_Coin = GameManager.Instance.currentStockData().MarketPrice;
+            stockSlide_Stock = 0;
+            
+            stockSlide_CoinText.text = $"{stockSlide_Coin}";
+            stockSlide_StockText.text = $"{stockSlide_Stock}";
+        }
+
+        private void PlusBuyStockPrice()
+        {
+
+        }
+
+        private void MinusBuyStockPrice()
+        {
+
+        }
+
+        private void PlusBuyStock()
+        {
+
+        }
+
+        private void MinusBuyStock()
+        {
+
+        }
+        #endregion
     }
 }

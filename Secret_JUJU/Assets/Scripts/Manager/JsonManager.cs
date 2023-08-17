@@ -20,6 +20,8 @@ namespace Manager
                 MarketManager.Instance.InitializeMarket();
                 MarketManager.Instance.market.AddCorporation();
                 isInitialized = true;
+                GameManager.Instance.InitializeGame();
+                UIManager.Instance.InitializeUI();
             }
             else
             {

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 public class CorporationData
 {
     public string BaseDate { get; private set; }             // 기준 일자
