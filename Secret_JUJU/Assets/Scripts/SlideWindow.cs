@@ -3,8 +3,7 @@ using UnityEngine;
 
 public class SlideWindow : MonoBehaviour
 {
-    [SerializeField] private GameObject coinSlideObject;
-    [SerializeField] private GameObject stockSlideObject;
+    [SerializeField] private GameObject slideObject;
     [SerializeField] private Animator animator;
 
     private bool isOpened = false;
@@ -15,11 +14,8 @@ public class SlideWindow : MonoBehaviour
     public void OnClickCloseSlideWindow() 
         => CloseSlideWindow();
 
-    public void OnClickActivateCoinSlideObject()
-        => ActivateCoinSlideObject();
-
-    public void OnClickActivateStockSlideObject()
-        => ActivateStockSlideObject();
+    public void OnClickActivateSlideObject()
+        => ActivateSlideObject();
 
     public void EventDeactivateSlideObject() 
         => DeactivateSlideObject();
@@ -34,28 +30,18 @@ public class SlideWindow : MonoBehaviour
         animator.SetBool("isClickClose", true);
     }
 
-    private void ActivateCoinSlideObject()
+    private void ActivateSlideObject()
     {
         if (isOpened == false)
         {
-            coinSlideObject.SetActive(true);
-            isOpened = true;
-        }
-    }
-
-    private void ActivateStockSlideObject()
-    {
-        if (isOpened == false)
-        {
-            stockSlideObject.SetActive(true);
+            slideObject.SetActive(true);
             isOpened = true;
         }
     }
 
     private void DeactivateSlideObject()
     {
-        coinSlideObject.SetActive(false);
-        stockSlideObject.SetActive(false);
+        slideObject.SetActive(false);
         isOpened = false;
     }
 }
