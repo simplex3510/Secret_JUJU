@@ -16,17 +16,13 @@ namespace Manager
         public void InitializeUI()
         {
             InitializeStockChart();
-            UpdateStockChart();
-
-            UpdateTurnUI();
-            UpdateAccountUI();
-            UpdateSlideUI();
+            InitializeInterface();
 
             MoveTurn += GameManager.Instance.MoveTurn;
+            MoveTurn += UpdateInterface;
             MoveTurn += UpdateStockChart;
-            MoveTurn += UpdateTurnUI;
-            MoveTurn += UpdateAccountUI;
-            MoveTurn += UpdateSlideUI;
+            MoveTurn += InitializeCoinSlide;
+            MoveTurn += InitializeStockSlide;
         }
 
         // Stock Graph UI
@@ -109,78 +105,108 @@ namespace Manager
                 AxisMinY = lowPrice;
             }
         }
+
+        //private void UpdateUnitY(int marketPrice)
+        //{
+        //    if (500_000 < marketPrice)
+        //    {
+        //        unitY = 1000;
+        //    }
+        //    else if (200_000 < marketPrice)
+        //    {
+        //        unitY = 500;
+        //    }
+        //    else if (50_000 < marketPrice)
+        //    {
+        //        unitY = 100;
+        //    }
+        //    else if (20_000 < marketPrice)
+        //    {
+        //        unitY = 50;
+        //    }
+        //    else if (5_000 < marketPrice)
+        //    {
+        //        unitY = 10;
+        //    }
+        //    else if (2_000 < marketPrice)
+        //    {
+        //        unitY = 5;
+        //    }
+        //    else
+        //    {
+        //        unitY = 1;
+        //    }
+        //}
         #endregion
 
-        // Turn UI
-        #region Turn UI
-        [SerializeField] private TextMeshProUGUI turnText;
-
-        public void UpdateTurnUI()
-        {
-            turnText.text = $"({GameManager.Instance.TurnIndex + 1}/{GameManager.Instance.TurnMax})";
-        }
-
-        #endregion
-
-        // Account UI
-        #region Account UI
+        #region Interface
         [SerializeField] private TextMeshProUGUI coinAmountText;
         [SerializeField] private TextMeshProUGUI stockAmountText;
         [SerializeField] private TextMeshProUGUI profitRateText;
+        [SerializeField] private TextMeshProUGUI turnText;
 
-        public void UpdateAccountUI()
+        public void InitializeInterface()
         {
             coinAmountText.text = $"{GameManager.Instance.CoinAmount}";
             stockAmountText.text = $"{GameManager.Instance.StockAmount}";
             profitRateText.text = $"({GameManager.Instance.cumulativeProfitRate}%)";
+            turnText.text = $"({GameManager.Instance.TurnIndex + 1}/{GameManager.Instance.TurnMax})";
+        }
+
+        public void UpdateInterface()
+        {
+            turnText.text = $"({GameManager.Instance.TurnIndex + 1}/{GameManager.Instance.TurnMax})";
         }
         #endregion
 
-        // Slide UI
-        #region Slide UI
-        [SerializeField] private TextMeshProUGUI slide_CoinText;
-        [SerializeField] private TextMeshProUGUI slide_StockText;
+        #region Slide Interface
+        [SerializeField] private TextMeshProUGUI coinSlide_CoinText;
+        [SerializeField] private TextMeshProUGUI coinSlide_StockText;
+        private int coinSlide_Coin;
+        private int coinSlide_Stock;
+        
+        [SerializeField] private TextMeshProUGUI stockSlide_CoinText;
+        [SerializeField] private TextMeshProUGUI stockSlide_StockText;
+        private int stockSlide_Coin;
+        private int stockSlide_Stock;
 
-        public void OnClickBuyStock()
+        private void InitializeCoinSlide()
         {
-            GameManager.Instance.BuyStock();
-            UpdateAccountUI();
+            coinSlide_Coin = GameManager.Instance.currentStockData().MarketPrice;
+            coinSlide_Stock = 0;
+
+            coinSlide_CoinText.text = $"{coinSlide_Coin}";
+            coinSlide_StockText.text = $"{coinSlide_Stock}";
+
         }
 
-        public void OnClickSellStock()
+        private void InitializeStockSlide()
         {
-            GameManager.Instance.SellStock();
-            UpdateAccountUI();
+            stockSlide_Coin = GameManager.Instance.currentStockData().MarketPrice;
+            stockSlide_Stock = 0;
+            
+            stockSlide_CoinText.text = $"{stockSlide_Coin}";
+            stockSlide_StockText.text = $"{stockSlide_Stock}";
         }
 
-        public void OnClickUpCoin()
+        private void PlusBuyStockPrice()
         {
-            GameManager.Instance.UpCoin();
-            UpdateSlideUI();
+
         }
 
-        public void OnClickDownCoin()
+        private void MinusBuyStockPrice()
         {
-            GameManager.Instance.DownCoin();
-            UpdateSlideUI();
+
         }
 
-        public void OnClickUpStock()
+        private void PlusBuyStock()
         {
-            GameManager.Instance.UpStock();
-            UpdateSlideUI();
+
         }
 
-        public void OnClickDownStock()
+        private void MinusBuyStock()
         {
-            GameManager.Instance.DownStock();
-            UpdateSlideUI();
-        }
 
-        private void UpdateSlideUI()
-        {
-            slide_CoinText.text = $"{GameManager.Instance.Slide_Coin}";
-            slide_StockText.text = $"{GameManager.Instance.Slide_Stock}";
         }
         #endregion
     }

@@ -1,0 +1,68 @@
+{
+  "response": {
+    "header": {
+      "resultCode": "00",
+      "resultMsg": "NORMAL SERVICE."
+    },
+    "body": {
+      "numOfRows": 3,
+      "pageNo": 1,
+      "totalCount": 2271682,
+      "items": {
+        "item": [
+          {
+            "basDt": "20230719",
+            "srtnCd": "900110",
+            "isinCd": "HK0000057197",
+            "itmsNm": "이스트아시아홀딩스",
+            "mrktCtg": "KOSDAQ",
+            "clpr": "149",
+            "vs": "-3",
+            "fltRt": "-1.97",
+            "mkp": "151",
+            "hipr": "152",
+            "lopr": "149",
+            "trqu": "1602752",
+            "trPrc": "240451874",
+            "lstgStCnt": "291932050",
+            "mrktTotAmt": "43497875450"
+          },
+          {
+            "basDt": "20230719",
+            "srtnCd": "900270",
+            "isinCd": "HK0000214814",
+            "itmsNm": "헝셩그룹",
+            "mrktCtg": "KOSDAQ",
+            "clpr": "294",
+            "vs": "-4",
+            "fltRt": "-1.34",
+            "mkp": "298",
+            "hipr": "301",
+            "lopr": "292",
+            "trqu": "279010",
+            "trPrc": "81969574",
+            "lstgStCnt": "85682000",
+            "mrktTotAmt": "25190508000"
+          },
+          {
+            "basDt": "20230719",
+            "srtnCd": "900260",
+            "isinCd": "HK0000295359",
+            "itmsNm": "로스웰",
+            "mrktCtg": "KOSDAQ",
+            "clpr": "915",
+            "vs": "-33",
+            "fltRt": "-3.48",
+            "mkp": "948",
+            "hipr": "950",
+            "lopr": "909",
+            "trqu": "145244",
+            "trPrc": "134240863",
+            "lstgStCnt": "36031288",
+            "mrktTotAmt": "32968628520"
+          }
+        ]
+      }
+    }
+  }
+}
